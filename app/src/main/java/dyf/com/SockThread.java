@@ -32,6 +32,9 @@ public class SockThread implements Runnable {
     private String sensorTypeStr = null;//The sensor types of this  device.
     private int SAMPLINGPERIODUS = 3;//default samping period 3
     public Handler sendHandler = null;//send sensor data by socket
+    public static boolean sendFailB = false;
+    public static boolean connectFailB = false;
+    public static boolean monitorServerFailB = false;
 
     SockThread(SensorManager sensorManager, SensorActivity sensorActivity, Handler handlerUI, String ip)
     {
@@ -56,6 +59,7 @@ public class SockThread implements Runnable {
 
     @Override
     public void run() {
+
         try
         {
             s = new Socket();
@@ -69,9 +73,12 @@ public class SockThread implements Runnable {
             }
             catch (IOException e)
             {
-                Message msgUI = Message.obtain().obtain();
-                msgUI.what = -101;
-                handlerUI.sendMessage(msgUI);
+                if(!SockThread.sendFailB) {
+                    Message msgUI = Message.obtain();
+                    msgUI.what = -101;
+                    handlerUI.sendMessage(msgUI);
+                    SockThread.sendFailB = true;
+                }
             }
             //监听来自server的消息
             new Thread()
@@ -98,9 +105,12 @@ public class SockThread implements Runnable {
                         }
                     }catch (IOException e)
                     {
-                        Message msgUI = Message.obtain().obtain();
-                        msgUI.what = -101;
-                        handlerUI.sendMessage(msgUI);
+                        if(!SockThread.monitorServerFailB) {
+                            Message msgUI = Message.obtain();
+                            msgUI.what = -102;
+                            handlerUI.sendMessage(msgUI);
+                            SockThread.monitorServerFailB = true;
+                        }
                     }
                 }
             }.start();
@@ -117,9 +127,13 @@ public class SockThread implements Runnable {
                     }
                     catch (IOException e)
                     {
-                        Message msgUI = Message.obtain().obtain();
-                        msgUI.what = -101;
-                        handlerUI.sendMessage(msgUI);
+                        if(!SockThread.sendFailB) {
+                            Message msgUI = Message.obtain();
+                            msgUI.what = -101;
+                            handlerUI.sendMessage(msgUI);
+                            SockThread.sendFailB = true;
+                        }
+
                     }
                 }
             };
@@ -128,9 +142,12 @@ public class SockThread implements Runnable {
         }
         catch (IOException e)
         {
-            Message msgUI = Message.obtain().obtain();
-            msgUI.what = -101;
-            handlerUI.sendMessage(msgUI);
+            if(!SockThread.connectFailB) {
+                Message msgUI = Message.obtain();
+                msgUI.what = -100;
+                handlerUI.sendMessage(msgUI);
+                SockThread.connectFailB = true;
+            }
         }
     }
 

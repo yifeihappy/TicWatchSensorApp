@@ -106,6 +106,10 @@ public class SensorActivity extends Activity  implements SensorEventListener{
                     Toast.makeText(SensorActivity.this, "connect to server failed!", Toast.LENGTH_SHORT).show();
                     finish();
                     break;
+                case -102:
+                    Toast.makeText(SensorActivity.this, "monitor to server failed!", Toast.LENGTH_SHORT).show();
+                    finish();
+                    break;
                 default:
                     Bundle bundle = msg.getData();
                     textViewTimeStamp.setText("T:"+bundle.getString("t"));
