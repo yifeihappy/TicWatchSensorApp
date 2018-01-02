@@ -21,7 +21,7 @@ import dyf.com.SensorActivity;
  */
 
 public class SockThread implements Runnable {
-    public static String IP = "192.168.10.103";
+    public static String IP = null;
     public static int PORT = 30000;
     private SensorActivity sensorActivity = null;
     private SensorManager sensorManager = null;
@@ -33,11 +33,12 @@ public class SockThread implements Runnable {
     private int SAMPLINGPERIODUS = 3;//default samping period 3
     public Handler sendHandler = null;//send sensor data by socket
 
-    SockThread(SensorManager sensorManager, SensorActivity sensorActivity, Handler handlerUI)
+    SockThread(SensorManager sensorManager, SensorActivity sensorActivity, Handler handlerUI, String ip)
     {
         this.sensorActivity = sensorActivity;
         this.handlerUI = handlerUI;
         this.sensorManager = sensorManager;
+        this.IP = ip;
 
         List<Sensor> listSensor = sensorManager.getSensorList(Sensor.TYPE_ALL);
         StringBuffer strBufferSensor = new StringBuffer();
@@ -49,7 +50,9 @@ public class SockThread implements Runnable {
         strBufferSensor.append("\n");
         sensorTypeStr = strBufferSensor.toString();
     }
-
+    public static void setIP(String ip) {
+        IP = ip;
+    }
 
     @Override
     public void run() {

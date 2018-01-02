@@ -2,6 +2,7 @@ package dyf.com;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -26,11 +27,21 @@ public class SensorActivity extends Activity  implements SensorEventListener{
     private Handler handlerUI = null;
     private SockThread sockThread = null;
     private StringBuffer strBufferMsg = null;
+    String IP = null;
+    SharedPreferences preferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sensor_layout);
+
+        preferences = getSharedPreferences("IP", Context.MODE_PRIVATE);
+        IP = preferences.getString("IP", null);
+        if(IP == null) {
+            finish();
+        }
+
         //保持屏幕不暗
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         textViewTimeStamp = (TextView)findViewById(R.id.textViewTimestamp);
@@ -38,7 +49,7 @@ public class SensorActivity extends Activity  implements SensorEventListener{
 
         //更新本activity layout 的handler
         handlerUI = new UIHandler();
-        sockThread = new SockThread(sensorManager,this, handlerUI);
+        sockThread = new SockThread(sensorManager,this, handlerUI, IP);
         new Thread(sockThread).start();
     }
 
